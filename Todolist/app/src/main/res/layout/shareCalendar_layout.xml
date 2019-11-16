@@ -25,11 +25,12 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_marginTop="4dp"
-            android:text="???????"
+            android:text="tbqjfsha"
             android:textColor="@android:color/black"
             android:textStyle="bold"
             android:textSize="18dp"
             android:layout_weight="3"
+            android:id="@+id/currentDate"
             />
         <ImageButton
             android:layout_width="40dp"

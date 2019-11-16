@@ -1,6 +1,5 @@
 package com.example.todolist.ShareList;
 
-/*!*/
 
 public class Events {
     String EVENT, TIME, DATE, MONTH, YEAR;
