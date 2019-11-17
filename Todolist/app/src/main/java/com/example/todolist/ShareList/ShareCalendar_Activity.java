@@ -3,6 +3,7 @@ package com.example.todolist.ShareList;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -28,7 +29,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.TimeZone;
 
 public class ShareCalendar_Activity extends LinearLayout {
@@ -42,6 +42,7 @@ public class ShareCalendar_Activity extends LinearLayout {
     SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM yyyy", Locale.KOREAN);
     SimpleDateFormat monthFomat = new SimpleDateFormat("MMMM",Locale.KOREAN);
     SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.KOREAN);
+    SimpleDateFormat eventDateFormate = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREAN);
 
     MyGridAdapter myGridAdapter;
     AlertDialog alertDialog;
@@ -108,6 +109,7 @@ public class ShareCalendar_Activity extends LinearLayout {
                         timePickerDialog.show();
                     }
                 });
+                //final String date = eventDateFormate.format(data.get(i));
                 final String date = dateFormat.format(data.get(i));
                 final String month = monthFomat.format(data.get(i));
                 final String year = yearFormat.format(data.get(i));
@@ -136,7 +138,7 @@ public class ShareCalendar_Activity extends LinearLayout {
         SQLiteDatabase database = dbOpenHelper.getWritableDatabase();
         dbOpenHelper.SaveEvent(event, time, date, month, year, database);
         dbOpenHelper.close();
-        Toast.makeText(context, "Event Saved", Toast.LENGTH_SHORT).show();;
+        Toast.makeText(context, "Event Saved", Toast.LENGTH_SHORT).show();
     }
 
     private void IntializeLayout(){
@@ -155,6 +157,7 @@ public class ShareCalendar_Activity extends LinearLayout {
         monthCalendar.set(Calendar.DAY_OF_MONTH, 1);
         int FirstDayofMonth = monthCalendar.get(Calendar.DAY_OF_MONTH);
         monthCalendar.add(Calendar.DAY_OF_MONTH, -FirstDayofMonth);
+        CollectEventsPerMonth(monthFomat.format(calendar.getTime()), yearFormat.format(calendar.getTime()));
 
         while (data.size() < MAX_CALENDAR_DAYS){
             data.add(monthCalendar.getTime());
@@ -163,6 +166,24 @@ public class ShareCalendar_Activity extends LinearLayout {
 
         myGridAdapter = new MyGridAdapter(context, data, calendar, eventsList);
         gridView.setAdapter(myGridAdapter);
+    }
+
+    private void CollectEventsPerMonth(String Month, String year){
+        eventsList.clear();
+        dbOpenHelper = new DBOpenHelper(context);
+        SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
+        Cursor cursor = dbOpenHelper.ReadEventsperMonth(Month, year, database);
+        while(cursor.moveToNext()){
+            String event = cursor.getString(cursor.getColumnIndex(DBStructure.EVENT));
+            String time = cursor.getString(cursor.getColumnIndex(DBStructure.TIME));
+            String data = cursor.getString(cursor.getColumnIndex(DBStructure.DATE));
+            String month = cursor.getString(cursor.getColumnIndex(DBStructure.MONTH));
+            String Year = cursor.getString(cursor.getColumnIndex(DBStructure.YEAR));
+            Events events = new Events(event, time, data, month, Year);
+            eventsList.add(events);
+        }
+        cursor.close();
+        dbOpenHelper.close();
     }
 }
 /*https://www.youtube.com/watch?v=ubvACPf5_tQ */
