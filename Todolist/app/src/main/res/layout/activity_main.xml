@@ -6,11 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.example.todolist.ShareList.ShareCalendar_Activity
+    <com.example.todolist.calendar.Calendar_Activity
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/shareviwe"
-        >
-    </com.example.todolist.ShareList.ShareCalendar_Activity>
+        android:id="@+id/calendar_view"
+        ></com.example.todolist.calendar.Calendar_Activity>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

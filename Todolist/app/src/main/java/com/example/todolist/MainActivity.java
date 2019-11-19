@@ -4,17 +4,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import com.example.todolist.ShareList.ShareCalendar_Activity;
+import com.example.todolist.calendar.Calendar_Activity;
+import com.example.todolist.R;
 
 public class MainActivity extends AppCompatActivity {
 
-    ShareCalendar_Activity shareCalendar_activity;
+    Calendar_Activity calendar_activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        shareCalendar_activity = (ShareCalendar_Activity)findViewById(R.id.shareviwe);
+        calendar_activity = (Calendar_Activity)findViewById(R.id.calendar_view);
     }
 }

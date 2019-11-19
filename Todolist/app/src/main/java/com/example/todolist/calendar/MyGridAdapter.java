@@ -1,4 +1,4 @@
-package com.example.todolist.ShareList;
+package com.example.todolist.calendar;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -23,13 +23,13 @@ import java.util.Locale;
 
 public class MyGridAdapter extends ArrayAdapter {
     List<Date> dates;
-    private final Calendar currentDate;
-    Calendar CurrentDate;
+    Calendar currentDate;
     List<Events> events;
     LayoutInflater inflater;
 
     public MyGridAdapter(@NonNull Context context, List<Date> dates, Calendar currentDate, List<Events> events) {
         super(context, R.layout.single_cell_layout);
+
         this.dates = dates;
         this.currentDate = currentDate;
         this.events = events;
@@ -40,17 +40,17 @@ public class MyGridAdapter extends ArrayAdapter {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         Date monthDate = dates.get(position);
-        Calendar dateCalender = Calendar.getInstance();
-        dateCalender.setTime(monthDate);
-        int DayNo = dateCalender.get(Calendar.DAY_OF_MONTH);
-        int displayMonth = dateCalender.get(Calendar.MONDAY)+1;
-        int displayYear = dateCalender.get(Calendar.YEAR);
-        int currentMonth = currentDate.get(Calendar.MONDAY)+1;
+        Calendar dateCalendar = Calendar.getInstance();
+        dateCalendar.setTime(monthDate);
+        int DayNo = dateCalendar.get(Calendar.DAY_OF_MONTH);
+        int displayMonth = dateCalendar.get(Calendar.MONTH)+1;
+        int displayYear = dateCalendar.get(Calendar.YEAR);
+        int currentMonth = currentDate.get(Calendar.MONTH)+1;
         int currentYear = currentDate.get(Calendar.YEAR);
 
         View view = convertView;
-        if(view == null){
-            view = inflater.inflate(R.layout.single_cell_layout, parent, false);
+        if (view == null){
+            view =  inflater.inflate(R.layout.single_cell_layout, parent, false);
         }
 
         if(displayMonth == currentMonth && displayYear == currentYear){
@@ -60,25 +60,24 @@ public class MyGridAdapter extends ArrayAdapter {
             view.setBackgroundColor(Color.parseColor("#cccccc"));
         }
 
-        TextView Day_Number = view.findViewById(R.id.calendar);
+        TextView Day_Number = view.findViewById(R.id.calendar_day);
         TextView EventNumber = view.findViewById(R.id.events_id);
         Day_Number.setText(String.valueOf(DayNo));
         Calendar eventCalendar = Calendar.getInstance();
         ArrayList<String> arrayList = new ArrayList<>();
-        for(int i = 0; i< events.size(); i++){
+        for(int i = 0; i<events.size(); i++){
             eventCalendar.setTime(ConvertStringToDate(events.get(i).getDATE()));
-            if(DayNo == eventCalendar.get(Calendar.DAY_OF_MONTH) && displayMonth == eventCalendar.get(Calendar.MONDAY)+1
-            && displayYear == eventCalendar.get(Calendar.YEAR)){
+            if(DayNo == eventCalendar.get(Calendar.DAY_OF_MONTH) && displayMonth == eventCalendar.get(Calendar.MONTH)+1
+                    && displayYear == eventCalendar.get(Calendar.YEAR)){
                 arrayList.add(events.get(i).getEVENT());
                 EventNumber.setText(arrayList.size()+" Events");
             }
         }
-
         return view;
     }
 
     private Date  ConvertStringToDate(String eventDate){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd", Locale.KOREAN);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREAN);
         Date date = null;
         try{
             date = format.parse(eventDate);

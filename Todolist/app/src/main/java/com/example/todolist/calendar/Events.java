@@ -1,11 +1,10 @@
-package com.example.todolist.ShareList;
-
+package com.example.todolist.calendar;
 
 public class Events {
     String EVENT, TIME, DATE, MONTH, YEAR;
 
-    public Events(String ECENT, String TIME, String DATE, String MONTH, String YEAR) {
-        this.EVENT = ECENT;
+    public Events(String EVENT, String TIME, String DATE, String MONTH, String YEAR) {
+        this.EVENT = EVENT;
         this.TIME = TIME;
         this.DATE = DATE;
         this.MONTH = MONTH;
