@@ -20,6 +20,8 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todolist.R;
 
@@ -126,6 +128,49 @@ public class Calendar_Activity extends LinearLayout {
                 alertDialog.show();
             }
         });
+        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                String date = eventDateFormat.format(dates.get(position));
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setCancelable(true);
+                View showView = LayoutInflater.from(parent.getContext()).inflate(R.layout.show_events_layout, null);
+                RecyclerView recyclerView = showView.findViewById(R.id.EventsRV);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(showView.getContext());
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setHasFixedSize(true);
+                EventRecyclerAdapter eventRecyclerAdapter = new EventRecyclerAdapter(showView.getContext(), CollectEventByDate(date));
+                recyclerView.setAdapter(eventRecyclerAdapter);
+                eventRecyclerAdapter.notifyDataSetChanged();
+
+                builder.setView(showView);
+                alertDialog = builder.create();
+                alertDialog.show();
+
+                return true;
+            }
+        });
+    }
+
+    private ArrayList<Events> CollectEventByDate(String date){
+        ArrayList<Events> arrayList = new ArrayList<>();
+        dbOpenHelper = new DBOpenHelper(context);
+        SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
+        Cursor cursor = dbOpenHelper.ReadEvents(date, database);
+        while (cursor.moveToNext()){
+            String event = cursor.getString(cursor.getColumnIndex(DBStructure.EVENT));
+            String time = cursor.getString(cursor.getColumnIndex(DBStructure.TIME));
+            String Data = cursor.getString(cursor.getColumnIndex(DBStructure.DATE));
+            String month = cursor.getString(cursor.getColumnIndex(DBStructure.MONTH));
+            String Year = cursor.getString(cursor.getColumnIndex(DBStructure.YEAR));
+            Events events = new Events(event, time, Data, month, Year);
+            arrayList.add(events);
+        }
+        cursor.close();
+        dbOpenHelper.close();
+
+        return arrayList;
     }
 
     public Calendar_Activity(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
