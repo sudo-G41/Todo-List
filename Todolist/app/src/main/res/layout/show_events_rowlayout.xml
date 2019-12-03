@@ -17,46 +17,60 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             >
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textColor="@android:color/holo_blue_dark"
-                android:id="@+id/eventdate"
-                android:textStyle="bold"
-                android:text="Date"
-                android:textSize="15dp"
-                />
-            <TextView
+                android:orientation="horizontal"
+                >
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textColor="@android:color/holo_blue_dark"
+                    android:id="@+id/eventdate"
+                    android:textStyle="bold"
+                    android:text="Date"
+                    android:textSize="15dp"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textColor="@android:color/holo_green_dark"
+                    android:id="@+id/eventime"
+                    android:textStyle="bold"
+                    android:text="Time"
+                    android:textSize="20dp"
+                    />
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textColor="@android:color/holo_purple"
-                android:id="@+id/eventname"
-                android:textStyle="bold"
-                android:text="Event"
-                android:textSize="40dp"
-                />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textColor="@android:color/holo_green_dark"
-                android:id="@+id/eventime"
-                android:textStyle="bold"
-                android:text="Time"
-                android:textSize="20dp"
-                />
-
-            <ImageButton
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:id="@+id/alarameBtn"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:src="@drawable/ic_action_alaram_off"
-                android:background="@color/colorPrimaryDark"
-                />
+                >
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="20dp"
+                    android:id="@+id/alarameBtn"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/ic_action_alaram_off"
+                    android:background="@color/colorPrimaryDark"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="@android:color/holo_purple"
+                    android:id="@+id/eventname"
+                    android:textStyle="bold"
+                    android:text="Event"
+                    android:textSize="40dp"
+                    />
+            </LinearLayout>
 
             <Button
                 android:layout_width="match_parent"

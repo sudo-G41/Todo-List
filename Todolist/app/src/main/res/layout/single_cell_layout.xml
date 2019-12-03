@@ -12,6 +12,7 @@
         android:textStyle="bold"
         android:layout_gravity="left"
         android:textSize="10sp"
+        android:textColor="@android:color/black"
         />
     <TextView
         android:layout_width="wrap_content"
@@ -19,7 +20,7 @@
         android:textStyle="bold"
         android:textSize="9sp"
         android:id="@+id/events_id"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
         android:layout_gravity="center"
         />
 

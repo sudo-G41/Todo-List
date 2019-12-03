@@ -40,6 +40,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         datebase.insert(DBStructure.EVENT_TABLE_NAME, null, contentValues);
     }
 
+
     public Cursor ReadEvents(String date, SQLiteDatabase database){
         String[] Projections = {DBStructure.EVENT, DBStructure.TIME, DBStructure.DATE, DBStructure.MONTH, DBStructure.YEAR};
         String Selection = DBStructure.DATE + "=?";
