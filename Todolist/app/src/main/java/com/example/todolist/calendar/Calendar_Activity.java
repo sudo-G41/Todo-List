@@ -44,7 +44,8 @@ import java.util.TimeZone;
 import javax.crypto.Cipher;
 
 public class Calendar_Activity extends LinearLayout {
-    ImageButton NextBtn, PreviousBtn, shraecalendar;
+    ImageButton NextBtn, PreviousBtn;
+    Button shraecalendar;
     TextView CurrentDate;
     GridView gridView;
     private  static final int MAX_CALENDAR_DAYS = 42;
@@ -81,7 +82,7 @@ public class Calendar_Activity extends LinearLayout {
         shraecalendar.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                
+                SetUpCalendar();
             }
         });
         PreviousBtn.setOnClickListener(new OnClickListener() {
