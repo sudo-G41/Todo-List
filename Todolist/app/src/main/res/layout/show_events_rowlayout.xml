@@ -49,20 +49,12 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 >
-                <ImageButton
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="20dp"
-                    android:id="@+id/alarameBtn"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="10dp"
-                    android:src="@drawable/ic_action_alaram_off"
-                    android:background="@color/colorPrimaryDark"
-                    />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:gravity="center"
                     android:textColor="@android:color/holo_purple"
                     android:id="@+id/eventname"
@@ -70,16 +62,31 @@
                     android:text="Event"
                     android:textSize="40dp"
                     />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:orientation="vertical"
+                    >
+                    <ImageButton
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:id="@+id/alarameBtn"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_action_alaram_off"
+
+                        />
+                    <ImageButton
+                        android:layout_width="40dp"
+                        android:layout_height="28dp"
+                        android:id="@+id/delete"
+                        android:layout_gravity="center"
+                        android:src="@mipmap/delete"
+                        android:layout_marginTop="5dp"
+                        />
+                </LinearLayout>
             </LinearLayout>
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/delete"
-                android:text="Delete"
-                android:textAllCaps="false"
-                android:layout_margin="10dp"
-                />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
