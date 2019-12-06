@@ -5,4 +5,5 @@
     <color name="colorAccent">#D81B60</color>
     <color name="green">@android:color/holo_green_dark</color>
     <color name="white">@android:color/white</color>
+    <color name="beige">#f5f5dc</color>
 </resources>
