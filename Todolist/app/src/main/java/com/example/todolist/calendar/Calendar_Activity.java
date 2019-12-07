@@ -28,9 +28,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.todolist.MainActivity;
 import com.example.todolist.R;
 
 import java.text.SimpleDateFormat;
@@ -43,9 +45,11 @@ import java.util.TimeZone;
 
 import javax.crypto.Cipher;
 
+import com.example.todolist.sharecalendar.ShareButtenLocale;
+
 public class Calendar_Activity extends LinearLayout {
     ImageButton NextBtn, PreviousBtn;
-    Button shraecalendar;
+//    Button shraecalendar;
     TextView CurrentDate;
     GridView gridView;
     private  static final int MAX_CALENDAR_DAYS = 42;
@@ -75,16 +79,17 @@ public class Calendar_Activity extends LinearLayout {
 
     public Calendar_Activity(final Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        Log.d("Calendar ghaoEo","제발...");
         this.context = context;
         IntializeLayout();
         SetUpCalendar();
 
-        shraecalendar.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SetUpCalendar();
-            }
-        });
+//        shraecalendar.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.d("dlrjtms zmfflrdldu","제발...");
+//            }
+//        });
         PreviousBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -314,7 +319,7 @@ public class Calendar_Activity extends LinearLayout {
     private void IntializeLayout(){
         LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.calendar_layout, this);
-        shraecalendar= view.findViewById(R.id.shraecalendar);
+//        shraecalendar= view.findViewById(R.id.shraecalendar);
         NextBtn = view.findViewById(R.id.nextBtn);
         PreviousBtn = view.findViewById(R.id.previousBtn);
         CurrentDate = view.findViewById(R.id.currentDate);

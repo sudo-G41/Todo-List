@@ -79,12 +79,6 @@ public class Sh_Calendar_Activity extends LinearLayout {
         IntializeLayout();
         SetUpCalendar();
 
-        shraecalendar.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SetUpCalendar();
-            }
-        });
         PreviousBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -322,30 +316,31 @@ public class Sh_Calendar_Activity extends LinearLayout {
 
         /*공유용*/
         Login = (EditText)findViewById(R.id.login);
+        LOCALE = Sh_DBStructure.DB_VERSION_KR;
 
-        View localeView = inflater.inflate(R.layout.share_locale_select, null);
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setCancelable(true);
-        builder.setView(localeView);
-        alertDialog = builder.create();
-        alertDialog.show();
-        Button Kor, Ja;
-        Kor = (Button)findViewById(R.id.korea);
-        Kor.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LOCALE = Sh_DBStructure.DB_VERSION_KR;
-                alertDialog.dismiss();
-            }
-        });
-        Ja = (Button)findViewById(R.id.japan);
-        Ja.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LOCALE = Sh_DBStructure.DB_VERSION_JP;
-                alertDialog.dismiss();
-            }
-        });
+//        View localeView = inflater.inflate(R.layout.share_locale_select, null);
+//        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+//        builder.setCancelable(true);
+//        builder.setView(localeView);
+//        alertDialog = builder.create();
+//        alertDialog.show();
+//        Button Kor, Ja;
+//        Kor = (Button)findViewById(R.id.korea);
+//        Kor.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                LOCALE = Sh_DBStructure.DB_VERSION_KR;
+//                alertDialog.dismiss();
+//            }
+//        });
+//        Ja = (Button)findViewById(R.id.japan);
+//        Ja.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                LOCALE = Sh_DBStructure.DB_VERSION_JP;
+//                alertDialog.dismiss();
+//            }
+//        });
         /****************************************/
     }
 
