@@ -9,9 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            >
+        <activity android:name=".sharecalendar.ShareButtenLocale"></activity>
+        <activity android:name=".sharecalendar.ShareMainActivity" />
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,12 +21,10 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".calendar.AlarmReceiver"
-            android:exported="true"
+        <receiver
+            android:name=".calendar.AlarmReceiver"
             android:enabled="true"
-            >
-        </receiver>
-
+            android:exported="true" />
     </application>
 
 </manifest>
