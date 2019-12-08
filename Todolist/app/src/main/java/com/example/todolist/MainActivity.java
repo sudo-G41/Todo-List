@@ -22,13 +22,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         calendar_activity = (Calendar_Activity)findViewById(R.id.calendar_view);
         final Intent intent = new Intent(MainActivity.this, ShareButtenLocale.class);
-        Log.e("make intent","제발...");
         Button b = (Button)findViewById(R.id.shraecalendar) ;
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(intent);
-                Log.e("mainactivity","제발...");
+//                finish();
             }
         });
     }

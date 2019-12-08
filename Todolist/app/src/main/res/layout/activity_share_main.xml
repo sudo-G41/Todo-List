@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".sharecalendar.ShareMainActivity">
+    tools:context=".ShareMainActivity">
 
     <com.example.todolist.sharecalendar.Sh_Calendar_Activity
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/sh_calendar_view"
-        >
+        android:id="@+id/sh_calendar_view">
+
     </com.example.todolist.sharecalendar.Sh_Calendar_Activity>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

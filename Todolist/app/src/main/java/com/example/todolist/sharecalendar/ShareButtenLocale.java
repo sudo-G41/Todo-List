@@ -7,9 +7,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 
 import com.example.todolist.R;
+import com.example.todolist.ShareMainActivity;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ShareButtenLocale extends AppCompatActivity {
@@ -21,7 +21,6 @@ public class ShareButtenLocale extends AppCompatActivity {
         setContentView(R.layout.activity_share_butten_locale);
         SharIn = (Button)findViewById(R.id.share_in);
         SignUp = (Button)findViewById(R.id.sign_up);
-
         SignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -33,7 +32,9 @@ public class ShareButtenLocale extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(ShareButtenLocale.this, ShareMainActivity.class);
+//                intent.putExtra()
                 startActivity(intent);
+                finish();
             }
         });
     }

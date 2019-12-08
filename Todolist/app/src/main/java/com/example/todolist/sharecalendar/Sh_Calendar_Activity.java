@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,18 +29,30 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.todolist.MainActivity;
 import com.example.todolist.R;
+import com.example.todolist.ShareMainActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class Sh_Calendar_Activity extends LinearLayout {
     ImageButton NextBtn, PreviousBtn;
-    Button shraecalendar;
     TextView CurrentDate;
     GridView gridView;
     private  static final int MAX_CALENDAR_DAYS = 42;
@@ -47,9 +60,12 @@ public class Sh_Calendar_Activity extends LinearLayout {
     Context context;
 
     /*공유용*/
-    String Code;
-    EditText Login;
-    int LOCALE;
+    String LoginCode ="";
+    Button kr, jp;
+    String LocalName = "kr";
+    boolean Localbtn = true;
+//    EditText Login;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     /********/
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy MMMM", Locale.KOREAN);
@@ -61,13 +77,11 @@ public class Sh_Calendar_Activity extends LinearLayout {
     AlertDialog timecalendar;
     Sh_MyGridAdapter myGridAdapter;
 
-    List<Date> dates = new ArrayList<>();
-    List<Sh_Events> eventsList = new ArrayList<>();
+    ArrayList<Date> dates = new ArrayList<>();
+    ArrayList<Sh_Events> eventsList = new ArrayList<>();
     int alarmYear, alarmMonth, alarmDay, alarmHour, alarmMinuit;
     int y, m, d;
     long diff;
-
-    Sh_DBOpenHelper dbOpenHelper;
 
     public Sh_Calendar_Activity(Context context) {
         super(context);
@@ -78,6 +92,23 @@ public class Sh_Calendar_Activity extends LinearLayout {
         this.context = context;
         IntializeLayout();
         SetUpCalendar();
+
+        /*공유용*/
+        kr.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SelectKorea();
+                SetUpCalendar();
+            }
+        });
+        jp.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SelectJapan();
+                SetUpCalendar();
+            }
+        });
+        /********************************************/
 
         PreviousBtn.setOnClickListener(new OnClickListener() {
             @Override
@@ -96,28 +127,47 @@ public class Sh_Calendar_Activity extends LinearLayout {
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String date = eventDateFormat.format(dates.get(position));
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setCancelable(true);
-                View showView = LayoutInflater.from(parent.getContext()).inflate(R.layout.sh_show_events_layout, null);
-                RecyclerView recyclerView = showView.findViewById(R.id.sh_EventsRV);
-                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(showView.getContext());
-                recyclerView.setLayoutManager(layoutManager);
-                recyclerView.setHasFixedSize(true);
-                Sh_EventRecyclerAdapter eventRecyclerAdapter = new Sh_EventRecyclerAdapter(showView.getContext(), CollectEventByDate(date), LOCALE);
-                recyclerView.setAdapter(eventRecyclerAdapter);
-                eventRecyclerAdapter.notifyDataSetChanged();
-
-                builder.setView(showView);
-                alertDialog = builder.create();
-                alertDialog.show();
-
-                alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            public void onItemClick(final AdapterView<?> parent, View view, int position, long id) {
+                final String date = eventDateFormat.format(dates.get(position));
+                final String month = monthFomat.format(dates.get(position));
+                final String year = yearFormat.format(dates.get(position));
+                DocumentReference ref = db.collection("share").document(LoginCode)
+                        .collection(LocalName).document(year)
+                        .collection(month).document(date);
+                ref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
-                    public void onCancel(DialogInterface dialogInterface) {
-                        SetUpCalendar();
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()){
+                            DocumentSnapshot doc = task.getResult();
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            builder.setCancelable(true);
+                            if(doc.exists()){
+                                View showView = LayoutInflater.from(parent.getContext()).inflate(R.layout.sh_show_events_layout, null);
+                                RecyclerView recyclerView = showView.findViewById(R.id.sh_EventsRV);
+                                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(showView.getContext());
+                                recyclerView.setLayoutManager(layoutManager);
+                                recyclerView.setHasFixedSize(true);
+                                ArrayList arr = (ArrayList) doc.get("event");
+                                ArrayList<Sh_Events> array = new ArrayList<>();
+                                array.addAll(arr);
+                                Sh_EventRecyclerAdapter eventRecyclerAdapter = new Sh_EventRecyclerAdapter(showView.getContext(), array, LoginCode);//특정한 날자가 주어졌을때 그 날짜에 해당하는 배열 하나 반환
+                                recyclerView.setAdapter(eventRecyclerAdapter);
+                                eventRecyclerAdapter.notifyDataSetChanged();
+                                builder.setView(showView);
+                                alertDialog = builder.create();
+                                alertDialog.show();
+                                alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                    @Override
+                                    public void onCancel(DialogInterface dialogInterface) {
+                                        SetUpCalendar();
+                                    }
+                                });
+                            }
+                            else{
+                                Toast.makeText(context, "비어있습니다.", Toast.LENGTH_SHORT).show();
+                                Log.e("그리드뷰 실패","에러다..");
+                            }
+                        }
                     }
                 });
             }
@@ -187,26 +237,6 @@ public class Sh_Calendar_Activity extends LinearLayout {
                         newBuilder.setView(newView);
                         timecalendar = newBuilder.create();
                         timecalendar.show();
-                        /*============================================*/
-//                        Calendar calendar = Calendar.getInstance();
-//                        int hours = calendar.get(Calendar.HOUR_OF_DAY);
-//                        int minuts = calendar.get(Calendar.MINUTE);
-//                        TimePickerDialog timePickerDialog = new TimePickerDialog(addView.getContext(), R.style.Theme_AppCompat_Dialog
-//                                , new TimePickerDialog.OnTimeSetListener() {
-//                            @Override
-//                            public void onTimeSet(TimePicker timePicker, int hour, int minut) {
-//                                Calendar c = Calendar.getInstance();
-//                                c.set(Calendar.HOUR_OF_DAY, hour);
-//                                c.set(Calendar.MINUTE, minut);
-//                                c.setTimeZone(TimeZone.getDefault());
-//                                SimpleDateFormat hformat = new SimpleDateFormat("k:mm a",Locale.KOREAN);
-//                                String event_Time = hformat.format(c.getTime());
-//                                EventTime.setText(event_Time);
-//                                alarmHour = c.get(Calendar.HOUR_OF_DAY);
-//                                alarmMinuit = c.get(Calendar.MINUTE);
-//                            }
-//                        }, hours, minuts, false);
-//                        timePickerDialog.show();
                     }
                 });
 
@@ -219,7 +249,8 @@ public class Sh_Calendar_Activity extends LinearLayout {
                             String da = eventDateFormat.format(dates.get(position+i));
                             String mo = monthFomat.format(dates.get(position+i));
                             String ye = yearFormat.format(dates.get(position+i));
-                            SaveEvent(EventName.getText().toString(), EventTime.getText().toString(), da, mo, ye, "off");
+                            SaveEvent(EventName.getText().toString(), EventTime.getText().toString(), da, mo, ye);
+                            Log.e("savedate : ",da);
                             i++;
                         }
                         i += position;
@@ -227,14 +258,12 @@ public class Sh_Calendar_Activity extends LinearLayout {
                         String month = monthFomat.format(dates.get(i));
                         String year = yearFormat.format(dates.get(i));
                         if(alarmMe.isChecked()){
-                            SaveEvent(EventName.getText().toString(), EventTime.getText().toString(), date, month, year, "on");
-                            SetUpCalendar();
+                            SaveEvent(EventName.getText().toString(), EventTime.getText().toString(), date, month, year);
                             Calendar calendar = Calendar.getInstance();
                             calendar.set(alarmYear, alarmMonth, alarmDay, alarmHour, alarmMinuit);
-                            setAlern(calendar, EventName.getText().toString(), EventTime.getText().toString(), getRequestCode(date, EventName.getText().toString(), EventTime.getText().toString()));
                         }
                         else{
-                            SaveEvent(EventName.getText().toString(), EventTime.getText().toString(), date, month, year, "off");
+                            SaveEvent(EventName.getText().toString(), EventTime.getText().toString(), date, month, year);
                         }
                         SetUpCalendar();
                         alertDialog.dismiss();
@@ -249,134 +278,111 @@ public class Sh_Calendar_Activity extends LinearLayout {
         });
     }
 
-    private int getRequestCode(String date, String event, String time){
-        int code = 0;
-        dbOpenHelper = new Sh_DBOpenHelper(context, LOCALE);
-        SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
-        Cursor cursor = dbOpenHelper.ReadIDEvents(date, event, time,database);
-        while (cursor.moveToNext()){
-            code = cursor.getInt(cursor.getColumnIndex(Sh_DBStructure.ID));
-        }
-        cursor.close();
-        dbOpenHelper.close();
-
-        return code;
-    }
-
-    private void setAlern(Calendar calendar, String event, String time, int RequestCode){
-        Intent intent = new Intent(context.getApplicationContext(), Sh_AlarmReceiver.class);
-        intent.putExtra("event", event);
-        intent.putExtra("time", time);
-        intent.putExtra("id", RequestCode);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, RequestCode, intent, PendingIntent.FLAG_ONE_SHOT);
-        AlarmManager alarmManager = (AlarmManager)context.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-    }
-
-    private ArrayList<Sh_Events> CollectEventByDate(String date){
-        ArrayList<Sh_Events> arrayList = new ArrayList<>();
-        dbOpenHelper = new Sh_DBOpenHelper(context, LOCALE);
-        SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
-        Cursor cursor = dbOpenHelper.ReadEvents(date, database);
-        while (cursor.moveToNext()){
-            String event = cursor.getString(cursor.getColumnIndex(Sh_DBStructure.EVENT));
-            String time = cursor.getString(cursor.getColumnIndex(Sh_DBStructure.TIME));
-            String Data = cursor.getString(cursor.getColumnIndex(Sh_DBStructure.DATE));
-            String month = cursor.getString(cursor.getColumnIndex(Sh_DBStructure.MONTH));
-            String Year = cursor.getString(cursor.getColumnIndex(Sh_DBStructure.YEAR));
-            Sh_Events events = new Sh_Events(event, time, Data, month, Year);
-            arrayList.add(events);
-        }
-        cursor.close();
-        dbOpenHelper.close();
-
-        return arrayList;
-    }
-
     public Sh_Calendar_Activity(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    private void SaveEvent(String event, String time, String date, String month, String year, String notify){
-        dbOpenHelper = new Sh_DBOpenHelper(context, LOCALE);
-        SQLiteDatabase database = dbOpenHelper.getWritableDatabase();
-        dbOpenHelper.SaveEvent(event, time, date, month, year, notify, database);
-        dbOpenHelper.close();
+    private void SaveEvent(final String event, final String time, final String date, final String month, final String year){
+        final DocumentReference ref = db.collection("share").document(LoginCode)
+                .collection(LocalName).document(year)
+                .collection(month).document(date);
+        ref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot doc = task.getResult();
+                    Sh_Events ev = new Sh_Events(event, time, date, month, year);
+                    if(doc.exists()){
+                        ref.update("event", FieldValue.arrayUnion(ev));
+                    }
+                    else{
+                        ArrayList<Sh_Events> arr = new ArrayList<>();
+                        arr.add(ev);
+                        Map<String, ArrayList> map = new HashMap<>();
+                        map.put("event", arr);
+                        ref.set(map);
+                    }
+                }
+            }
+        });
         Toast.makeText(context, "Event Saved", Toast.LENGTH_SHORT).show();
     }
 
     private void IntializeLayout(){
         LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.calendar_layout, this);
-        shraecalendar= view.findViewById(R.id.shraecalendar);
-        NextBtn = view.findViewById(R.id.nextBtn);
-        PreviousBtn = view.findViewById(R.id.previousBtn);
-        CurrentDate = view.findViewById(R.id.currentDate);
-        gridView = view.findViewById(R.id.gridview);
+        View view = inflater.inflate(R.layout.sh_calendar_layout, this);
+        NextBtn = view.findViewById(R.id.sh_nextBtn);
+        PreviousBtn = view.findViewById(R.id.sh_previousBtn);
+        CurrentDate = view.findViewById(R.id.sh_currentDate);
+        gridView = view.findViewById(R.id.sh_gridview);
 
         /*공유용*/
-        Login = (EditText)findViewById(R.id.login);
-        LOCALE = Sh_DBStructure.DB_VERSION_KR;
-
-//        View localeView = inflater.inflate(R.layout.share_locale_select, null);
-//        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//        builder.setCancelable(true);
-//        builder.setView(localeView);
-//        alertDialog = builder.create();
-//        alertDialog.show();
-//        Button Kor, Ja;
-//        Kor = (Button)findViewById(R.id.korea);
-//        Kor.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                LOCALE = Sh_DBStructure.DB_VERSION_KR;
-//                alertDialog.dismiss();
-//            }
-//        });
-//        Ja = (Button)findViewById(R.id.japan);
-//        Ja.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                LOCALE = Sh_DBStructure.DB_VERSION_JP;
-//                alertDialog.dismiss();
-//            }
-//        });
+//        Login = (EditText)findViewById(R.id.login);
+        this.LoginCode = "su";
+        kr = view.findViewById(R.id.kr);
+        jp = view.findViewById(R.id.ja);
         /****************************************/
     }
 
     private void SetUpCalendar(){
-        String currwntDate = dateFormat.format(calendar.getTime());
-        CurrentDate.setText(currwntDate);
-        dates.clear();
-        Calendar monthCalendar = (Calendar) calendar.clone();
-        monthCalendar.set(Calendar.DAY_OF_MONTH, 1);
-        int FirstDayofMonth = monthCalendar.get(Calendar.DAY_OF_WEEK)-1;
-        monthCalendar.add(Calendar.DAY_OF_MONTH, -FirstDayofMonth);
-        CollectEventsPerMonth(monthFomat.format(calendar.getTime()), yearFormat.format(calendar.getTime()));
-
-        while (dates.size() < MAX_CALENDAR_DAYS){
-            dates.add(monthCalendar.getTime());
-            monthCalendar.add(Calendar.DAY_OF_MONTH,1);
-        }
-
-        myGridAdapter = new Sh_MyGridAdapter(context, dates, calendar, eventsList);
-        gridView.setAdapter(myGridAdapter);
+        db.collection("share").document(LoginCode)
+                .collection(LocalName).document(yearFormat.format(calendar.getTime()))
+                .collection(monthFomat.format(calendar.getTime()))
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            String currwntDate = dateFormat.format(calendar.getTime());
+                            CurrentDate.setText(currwntDate);
+                            dates.clear();
+                            Calendar monthCalendar = (Calendar) calendar.clone();
+                            monthCalendar.set(Calendar.DAY_OF_MONTH, 1);
+                            int FirstDayofMonth = monthCalendar.get(Calendar.DAY_OF_WEEK)-1;
+                            monthCalendar.add(Calendar.DAY_OF_MONTH, -FirstDayofMonth);
+                            eventsList.clear();
+                            ArrayList<Sh_Events> arr = new ArrayList<>();
+                            int count = 0;
+                            for(QueryDocumentSnapshot var : task.getResult()){
+                                count++;
+                                arr.addAll((ArrayList<Sh_Events>) var.get("event"));
+                            }
+                            for(Object var : arr) {
+                                Map<String, String> map = (Map<String, String>) var;
+                                Sh_Events eve = new Sh_Events(map.get("event"), map.get("time"), map.get("date"), map.get("month"), map.get("year"));
+                                eventsList.add(eve);
+                            }
+                            Log.wtf("eventList 동작 횟수 : ", ""+count);
+//                            CollectEventsPerMonth(monthFomat.format(calendar.getTime()), yearFormat.format(calendar.getTime()));//eventsList 를 초기화 해주는 구문
+                            while (dates.size() < MAX_CALENDAR_DAYS){
+                                dates.add(monthCalendar.getTime());
+                                monthCalendar.add(Calendar.DAY_OF_MONTH,1);
+                            }
+                            Log.e("그리드뷰 어뎁터 중간 보고 : ", "내용물 : "+eventsList.toString()+"\t클래스 : "+eventsList.getClass());
+//                            Log.e("그리드뷰 어뎁터 중간 보고 : ", "0번 클래스 : "+eventsList);
+                            myGridAdapter = new Sh_MyGridAdapter(context, dates, calendar, eventsList);
+                            gridView.setAdapter(myGridAdapter);
+                            Log.e("셋업캘린더","성공! (size "+eventsList.size()+")");
+                        }
+                        else{
+                            Log.e("셋업켈린더 에러","응 실패야");
+                        }
+                    }
+                });
     }
-    private void CollectEventsPerMonth(String Month, String Year){
-        eventsList.clear();
-        dbOpenHelper = new Sh_DBOpenHelper(context, LOCALE);
-        SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
-        Cursor cursor = dbOpenHelper.ReadEventsperMonth(Month, Year, database);
-        while(cursor.moveToNext()){
-            String event = cursor.getString(cursor.getColumnIndex(Sh_DBStructure.EVENT));
-            String time = cursor.getString(cursor.getColumnIndex(Sh_DBStructure.TIME));
-            String data = cursor.getString(cursor.getColumnIndex(Sh_DBStructure.DATE));
-            String month = cursor.getString(cursor.getColumnIndex(Sh_DBStructure.MONTH));
-            String year = cursor.getString(cursor.getColumnIndex(Sh_DBStructure.YEAR));
-            Sh_Events events = new Sh_Events(event, time, data, month, year);
-            eventsList.add(events);
-        }
-        cursor.close();
-        dbOpenHelper.close();
+    public void SelectKorea(){
+        this.LocalName = "kr";
+        this.dateFormat = new SimpleDateFormat("yyyy MMMM", Locale.KOREAN);
+        this.monthFomat = new SimpleDateFormat("MMMM",Locale.KOREAN);
+        this.yearFormat = new SimpleDateFormat("yyyy", Locale.KOREAN);
+        this.eventDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREAN);
+        this.Localbtn = true;
+    }
+    public void SelectJapan(){
+        this.LocalName = "jp";
+        this.dateFormat = new SimpleDateFormat("yyyy MMMM", Locale.JAPAN);
+        this.monthFomat = new SimpleDateFormat("MMMM",Locale.JAPAN);
+        this.yearFormat = new SimpleDateFormat("yyyy", Locale.JAPAN);
+        this.eventDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN);
+        this.Localbtn = false;
     }
 }

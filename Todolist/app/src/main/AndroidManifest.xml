@@ -10,7 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".sharecalendar.ShareButtenLocale"></activity>
-        <activity android:name=".sharecalendar.ShareMainActivity" />
+        <activity android:name=".ShareMainActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            ></activity>
         <activity
             android:name=".MainActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
@@ -26,5 +28,6 @@
             android:enabled="true"
             android:exported="true" />
     </application>
+
 
 </manifest>

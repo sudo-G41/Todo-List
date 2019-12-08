@@ -2,6 +2,7 @@ package com.example.todolist.sharecalendar;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +55,7 @@ public class Sh_MyGridAdapter extends ArrayAdapter {
         }
 
         if(displayMonth == currentMonth && displayYear == currentYear){
-            view.setBackgroundColor(getContext().getResources().getColor(R.color.white));
+            view.setBackgroundColor(Color.parseColor("#F5F5DC"));
         }
         else {
             view.setBackgroundColor(Color.parseColor("#cccccc"));
