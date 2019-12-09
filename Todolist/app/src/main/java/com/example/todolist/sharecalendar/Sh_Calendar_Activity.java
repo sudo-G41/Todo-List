@@ -61,11 +61,13 @@ public class Sh_Calendar_Activity extends LinearLayout {
     Calendar calendar = Calendar.getInstance(Locale.KOREAN);
     Context context;
 
+
     /*공유용*/
-    String LoginCode ="";
+    String LoginCode;
     Button kr, jp;
     String LocalName = "kr";
     boolean Localbtn = true;
+    TextView t;
 //    EditText Login;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     /********/
@@ -91,6 +93,7 @@ public class Sh_Calendar_Activity extends LinearLayout {
 
     public Sh_Calendar_Activity(final Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+
         this.context = context;
         IntializeLayout();
         SetUpCalendar();
@@ -389,6 +392,7 @@ public class Sh_Calendar_Activity extends LinearLayout {
     private void IntializeLayout(){
         LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.sh_calendar_layout, this);
+        t = findViewById(R.id.kdk_gkrl_tlfgek);
         NextBtn = view.findViewById(R.id.sh_nextBtn);
         PreviousBtn = view.findViewById(R.id.sh_previousBtn);
         CurrentDate = view.findViewById(R.id.sh_currentDate);
@@ -396,9 +400,10 @@ public class Sh_Calendar_Activity extends LinearLayout {
 
         /*공유용*/
 //        Login = (EditText)findViewById(R.id.login);
-        this.LoginCode = "su";
         kr = view.findViewById(R.id.kr);
         jp = view.findViewById(R.id.ja);
+
+        this.LoginCode = t.getText().toString();
         /****************************************/
     }
 

@@ -171,5 +171,12 @@
             />
 
     </LinearLayout>
+    <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/kdk_gkrl_tlfgek"
+    android:text="su"
+    android:visibility="invisible"
+    />
 
 </LinearLayout>
