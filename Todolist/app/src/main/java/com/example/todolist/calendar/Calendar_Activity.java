@@ -2,6 +2,7 @@ package com.example.todolist.calendar;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -18,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -50,7 +52,7 @@ import com.example.todolist.sharecalendar.ShareButtenLocale;
 public class Calendar_Activity extends LinearLayout {
     ImageButton NextBtn, PreviousBtn;
     Button shraecalendar;
-    TextView CurrentDate;
+    Button CurrentDate;
     GridView gridView;
     private  static final int MAX_CALENDAR_DAYS = 42;
     Calendar calendar = Calendar.getInstance(Locale.KOREAN);
@@ -83,8 +85,24 @@ public class Calendar_Activity extends LinearLayout {
         IntializeLayout();
         SetUpCalendar();
 
-//        CurrentDate.OnTouchListener()
-
+        CurrentDate.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar c = Calendar.getInstance();
+                DatePickerDialog date = new DatePickerDialog(context, android.R.style.Theme_Holo_Dialog_MinWidth, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                        calendar.set(i, i1, i2);
+                        SetUpCalendar();
+                    }
+                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+//                date.setMessage("이동할 날짜를 선택해 주세요");
+                date.getDatePicker().setCalendarViewShown(false);
+                date.getDatePicker().setSpinnersShown(true);
+                date.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                date.show();
+            }
+        });
         PreviousBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
