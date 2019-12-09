@@ -22,7 +22,7 @@
             android:layout_height="40dp"
             android:layout_margin="10dp"
             android:background="@mipmap/left" />
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -33,6 +33,10 @@
             android:textSize="20dp"
             android:layout_weight="3"
             android:id="@+id/sh_currentDate"
+            android:background="@android:color/white"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            style="?android:attr/borderlessButtonStyle"
             />
         <ImageButton
             android:layout_width="40dp"

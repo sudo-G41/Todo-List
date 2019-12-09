@@ -2,6 +2,7 @@ package com.example.todolist.sharecalendar;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -53,7 +55,7 @@ import java.util.Map;
 
 public class Sh_Calendar_Activity extends LinearLayout {
     ImageButton NextBtn, PreviousBtn;
-    TextView CurrentDate;
+    Button CurrentDate;
     GridView gridView;
     private  static final int MAX_CALENDAR_DAYS = 42;
     Calendar calendar = Calendar.getInstance(Locale.KOREAN);
@@ -109,6 +111,24 @@ public class Sh_Calendar_Activity extends LinearLayout {
             }
         });
         /********************************************/
+
+        CurrentDate.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatePickerDialog date = new DatePickerDialog(context, android.R.style.Theme_Holo_Dialog_MinWidth, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                        calendar.set(i, i1, i2);
+                        SetUpCalendar();
+                    }
+                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+                date.setMessage("이동할 날짜를 선택해 주세요");
+                date.getDatePicker().setCalendarViewShown(false);
+                date.getDatePicker().setSpinnersShown(true);
+                date.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                date.show();
+            }
+        });
 
         PreviousBtn.setOnClickListener(new OnClickListener() {
             @Override
@@ -249,7 +269,7 @@ public class Sh_Calendar_Activity extends LinearLayout {
                             String da = eventDateFormat.format(dates.get(position+i));
                             String mo = monthFomat.format(dates.get(position+i));
                             String ye = yearFormat.format(dates.get(position+i));
-                            SaveEvent(EventName.getText().toString(), EventTime.getText().toString(), da, mo, ye);
+                            SaveEvent(EventName.getText().toString(), EventTime.getText().toString(), da, mo, ye, position+1);
                             Log.e("savedate : ",da);
                             i++;
                         }
@@ -258,12 +278,12 @@ public class Sh_Calendar_Activity extends LinearLayout {
                         String month = monthFomat.format(dates.get(i));
                         String year = yearFormat.format(dates.get(i));
                         if(alarmMe.isChecked()){
-                            SaveEvent(EventName.getText().toString(), EventTime.getText().toString(), date, month, year);
+                            SaveEvent(EventName.getText().toString(), EventTime.getText().toString(), date, month, year, i);
                             Calendar calendar = Calendar.getInstance();
                             calendar.set(alarmYear, alarmMonth, alarmDay, alarmHour, alarmMinuit);
                         }
                         else{
-                            SaveEvent(EventName.getText().toString(), EventTime.getText().toString(), date, month, year);
+                            SaveEvent(EventName.getText().toString(), EventTime.getText().toString(), date, month, year, i);
                         }
                         SetUpCalendar();
                         alertDialog.dismiss();
@@ -282,7 +302,7 @@ public class Sh_Calendar_Activity extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    private void SaveEvent(final String event, final String time, final String date, final String month, final String year){
+    private void SaveEvent(final String event, final String time, final String date, final String month, final String year, int p){
         final DocumentReference ref = db.collection("share").document(LoginCode)
                 .collection(LocalName).document(year)
                 .collection(month).document(date);
@@ -305,6 +325,64 @@ public class Sh_Calendar_Activity extends LinearLayout {
                 }
             }
         });
+        if(Localbtn){
+            SelectJapan();
+            final String da = eventDateFormat.format(dates.get(p));
+            final String mo = monthFomat.format(dates.get(p));
+            final String ye = yearFormat.format(dates.get(p));
+            final DocumentReference ref2 = db.collection("share").document(LoginCode)
+                    .collection(LocalName).document(ye)
+                    .collection(mo).document(da);
+            ref2.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()){
+                        DocumentSnapshot doc = task.getResult();
+                        Sh_Events ev = new Sh_Events(event, time, da, mo, ye);
+                        if(doc.exists()){
+                            ref2.update("event", FieldValue.arrayUnion(ev));
+                        }
+                        else{
+                            ArrayList<Sh_Events> arr = new ArrayList<>();
+                            arr.add(ev);
+                            Map<String, ArrayList> map = new HashMap<>();
+                            map.put("event", arr);
+                            ref2.set(map);
+                        }
+                    }
+                }
+            });
+            SelectKorea();
+        }
+        else {
+            SelectKorea();
+            final String da = eventDateFormat.format(dates.get(p));
+            final String mo = monthFomat.format(dates.get(p));
+            final String ye = yearFormat.format(dates.get(p));
+            final DocumentReference ref2 = db.collection("share").document(LoginCode)
+                    .collection(LocalName).document(ye)
+                    .collection(mo).document(da);
+            ref2.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()){
+                        DocumentSnapshot doc = task.getResult();
+                        Sh_Events ev = new Sh_Events(event, time, da, mo, ye);
+                        if(doc.exists()){
+                            ref2.update("event", FieldValue.arrayUnion(ev));
+                        }
+                        else{
+                            ArrayList<Sh_Events> arr = new ArrayList<>();
+                            arr.add(ev);
+                            Map<String, ArrayList> map = new HashMap<>();
+                            map.put("event", arr);
+                            ref2.set(map);
+                        }
+                    }
+                }
+            });
+            SelectJapan();
+        }
         Toast.makeText(context, "Event Saved", Toast.LENGTH_SHORT).show();
     }
 
@@ -376,6 +454,7 @@ public class Sh_Calendar_Activity extends LinearLayout {
         this.yearFormat = new SimpleDateFormat("yyyy", Locale.KOREAN);
         this.eventDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREAN);
         this.Localbtn = true;
+        Log.e("언어설정","한국어");
     }
     public void SelectJapan(){
         this.LocalName = "jp";
@@ -384,5 +463,6 @@ public class Sh_Calendar_Activity extends LinearLayout {
         this.yearFormat = new SimpleDateFormat("yyyy", Locale.JAPAN);
         this.eventDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN);
         this.Localbtn = false;
+        Log.e("언어설정","일본어");
     }
 }

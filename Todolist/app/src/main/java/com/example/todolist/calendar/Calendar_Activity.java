@@ -96,7 +96,7 @@ public class Calendar_Activity extends LinearLayout {
                         SetUpCalendar();
                     }
                 }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-//                date.setMessage("이동할 날짜를 선택해 주세요");
+                date.setMessage("이동할 날짜를 선택해 주세요");
                 date.getDatePicker().setCalendarViewShown(false);
                 date.getDatePicker().setSpinnersShown(true);
                 date.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
