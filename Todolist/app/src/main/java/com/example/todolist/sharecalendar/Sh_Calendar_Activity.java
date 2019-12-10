@@ -96,6 +96,7 @@ public class Sh_Calendar_Activity extends LinearLayout {
 
         this.context = context;
         IntializeLayout();
+        Log.e("공유 캘린더 아이디 : ", LoginCode);
         SetUpCalendar();
 
         /*공유용*/

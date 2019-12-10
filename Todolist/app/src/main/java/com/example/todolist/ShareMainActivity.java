@@ -27,7 +27,7 @@ public class ShareMainActivity extends AppCompatActivity {
         sh_calendar_activity = (Sh_Calendar_Activity)findViewById(R.id.sh_calendar_view);
         intent = getIntent();
         t = (TextView)findViewById(R.id.kdk_gkrl_tlfgek);
-        str = intent.getExtras().getString("LoginCode");
+        str = intent.getStringExtra("code");
         t.setText(str);
     }
 }
