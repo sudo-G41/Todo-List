@@ -93,6 +93,7 @@ public class Sh_Calendar_Activity extends LinearLayout {
 
     public Sh_Calendar_Activity(final Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        Log.e("캘린더 시작 : ", "하지마루요?");
 
         this.context = context;
         IntializeLayout();
@@ -126,7 +127,12 @@ public class Sh_Calendar_Activity extends LinearLayout {
                         SetUpCalendar();
                     }
                 }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-                date.setMessage("이동할 날짜를 선택해 주세요");
+                if(Localbtn){
+                    date.setMessage("이동할 날짜를 선택해 주세요");
+                }
+                else{
+                    date.setMessage("移動する日付を選択して下さい。");
+                }
                 date.getDatePicker().setCalendarViewShown(false);
                 date.getDatePicker().setSpinnersShown(true);
                 date.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -404,11 +410,15 @@ public class Sh_Calendar_Activity extends LinearLayout {
         kr = view.findViewById(R.id.kr);
         jp = view.findViewById(R.id.ja);
 
-        this.LoginCode = t.getText().toString();
+        this.LoginCode = ((ShareMainActivity)context).getStr();
+        Log.e("아이디 입력 ", ""+LoginCode);
+
         /****************************************/
     }
 
     private void SetUpCalendar(){
+
+        Log.e("데이터베이스 가기 전 ", LoginCode+", "+LoginCode.getClass());
         db.collection("share").document(LoginCode)
                 .collection(LocalName).document(yearFormat.format(calendar.getTime()))
                 .collection(monthFomat.format(calendar.getTime()))
@@ -436,7 +446,6 @@ public class Sh_Calendar_Activity extends LinearLayout {
                                 eventsList.add(eve);
                             }
                             Log.wtf("eventList 동작 횟수 : ", ""+count);
-//                            CollectEventsPerMonth(monthFomat.format(calendar.getTime()), yearFormat.format(calendar.getTime()));//eventsList 를 초기화 해주는 구문
                             while (dates.size() < MAX_CALENDAR_DAYS){
                                 dates.add(monthCalendar.getTime());
                                 monthCalendar.add(Calendar.DAY_OF_MONTH,1);

@@ -17,17 +17,22 @@ public class ShareMainActivity extends AppCompatActivity {
 
     Sh_Calendar_Activity sh_calendar_activity;
     Intent intent;
-    TextView t;
     String str;
+
+    public ShareMainActivity(){
+    }
+
+    public String getStr() {
+        return str;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_share_main);
-        sh_calendar_activity = (Sh_Calendar_Activity)findViewById(R.id.sh_calendar_view);
         intent = getIntent();
-        t = (TextView)findViewById(R.id.kdk_gkrl_tlfgek);
         str = intent.getStringExtra("code");
-        t.setText(str);
+        setContentView(R.layout.activity_share_main);
+        Log.e("ㅋㅋㅋㅋㅋㅋㅋ","ㅋㅋㅋㅋ");
+        sh_calendar_activity = (Sh_Calendar_Activity)findViewById(R.id.sh_calendar_view);
     }
 }

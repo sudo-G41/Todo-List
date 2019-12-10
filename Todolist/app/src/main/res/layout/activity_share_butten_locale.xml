@@ -30,7 +30,7 @@
 
         <EditText
             android:id="@+id/sing_id"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Code"
             android:ems="15"
@@ -41,7 +41,7 @@
 
         <EditText
             android:id="@+id/sing_password"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Password"
             android:ems="15"
