@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.todolist.API.NaverAPI;
 import com.example.todolist.MainActivity;
 import com.example.todolist.R;
 import com.example.todolist.ShareMainActivity;
@@ -44,6 +45,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -273,30 +280,50 @@ public class Sh_Calendar_Activity extends LinearLayout {
                 AddEvent.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        diff = diff/(24*60*60*1000);
-                        int i = 0;
-                        while(i<(int)diff){
-                            String da = eventDateFormat.format(dates.get(position+i));
-                            String mo = monthFomat.format(dates.get(position+i));
-                            String ye = yearFormat.format(dates.get(position+i));
-                            SaveEvent(EventName.getText().toString(), EventTime.getText().toString(), da, mo, ye, position+1);
-                            Log.e("savedate : ",da);
-                            i++;
+                        final Toast toast;
+                        if (Localbtn) {
+                            toast = Toast.makeText(context, "저장중입니다.", Toast.LENGTH_SHORT);
+                        } else {
+                            toast = Toast.makeText(context, "保存中です。", Toast.LENGTH_SHORT);
                         }
-                        i += position;
-                        String date = eventDateFormat.format(dates.get(i));
-                        String month = monthFomat.format(dates.get(i));
-                        String year = yearFormat.format(dates.get(i));
-                        if(alarmMe.isChecked()){
-                            SaveEvent(EventName.getText().toString(), EventTime.getText().toString(), date, month, year, i);
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.set(alarmYear, alarmMonth, alarmDay, alarmHour, alarmMinuit);
+                        String tl;
+                        if(Localbtn){
+                            tl = "ja";
                         }
                         else{
-                            SaveEvent(EventName.getText().toString(), EventTime.getText().toString(), date, month, year, i);
+                            tl = "ko";
                         }
-                        SetUpCalendar();
-                        alertDialog.dismiss();
+                        final NaverAPI naverAPI = new NaverAPI(EventName.getText().toString(), tl);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                String tlstr = naverAPI.getTstr();
+                                diff = diff / (24 * 60 * 60 * 1000);
+                                int i = 0;
+                                while (i < (int) diff) {
+                                    String da = eventDateFormat.format(dates.get(position + i));
+                                    String mo = monthFomat.format(dates.get(position + i));
+                                    String ye = yearFormat.format(dates.get(position + i));
+                                    SaveEvent(EventName.getText().toString(), tlstr, EventTime.getText().toString(), da, mo, ye, position + 1);
+                                    Log.e("savedate : ", da);
+                                    i++;
+                                }
+                                i += position;
+                                String date = eventDateFormat.format(dates.get(i));
+                                String month = monthFomat.format(dates.get(i));
+                                String year = yearFormat.format(dates.get(i));
+                                if (alarmMe.isChecked()) {
+                                    SaveEvent(EventName.getText().toString(), tlstr, EventTime.getText().toString(), date, month, year, i);
+                                    Calendar calendar = Calendar.getInstance();
+                                    calendar.set(alarmYear, alarmMonth, alarmDay, alarmHour, alarmMinuit);
+                                } else {
+                                    SaveEvent(EventName.getText().toString(), tlstr, EventTime.getText().toString(), date, month, year, i);
+                                }
+                                toast.cancel();
+                                SetUpCalendar();
+                                alertDialog.dismiss();
+                            }
+                        }, 500);
                     }
                 });
                 builder.setView(addView);
@@ -312,7 +339,7 @@ public class Sh_Calendar_Activity extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    private void SaveEvent(final String event, final String time, final String date, final String month, final String year, int p){
+    private void SaveEvent(final String event, final String tevent, final String time, final String date, final String month, final String year, int p){
         final DocumentReference ref = db.collection("share").document(LoginCode)
                 .collection(LocalName).document(year)
                 .collection(month).document(date);
@@ -348,7 +375,7 @@ public class Sh_Calendar_Activity extends LinearLayout {
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.isSuccessful()){
                         DocumentSnapshot doc = task.getResult();
-                        Sh_Events ev = new Sh_Events(event, time, da, mo, ye);
+                        Sh_Events ev = new Sh_Events(tevent, time, da, mo, ye);
                         if(doc.exists()){
                             ref2.update("event", FieldValue.arrayUnion(ev));
                         }
@@ -377,7 +404,7 @@ public class Sh_Calendar_Activity extends LinearLayout {
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.isSuccessful()){
                         DocumentSnapshot doc = task.getResult();
-                        Sh_Events ev = new Sh_Events(event, time, da, mo, ye);
+                        Sh_Events ev = new Sh_Events(tevent, time, da, mo, ye);
                         if(doc.exists()){
                             ref2.update("event", FieldValue.arrayUnion(ev));
                         }
