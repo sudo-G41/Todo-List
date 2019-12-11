@@ -126,9 +126,28 @@ public class Sh_EventRecyclerAdapter extends RecyclerView.Adapter<Sh_EventRecycl
     }
 
     private void deleteCalendarEvent(Sh_Events del){
+        int i = del.MONTH.indexOf("월");
+        String lo;
+        String lo2;
+        String month;
+        if(i>0){
+            lo = "kr";
+            lo2 = "jp";
+            month = del.MONTH.substring(0, del.MONTH.length()-1)+"月";
+
+        }
+        else{
+            lo = "jp";
+            lo2 = "kr";
+            month = del.MONTH.substring(0, del.MONTH.length()-1)+"월";
+        }
         DocumentReference ref = db.collection("share").document(loginCode)
-                .collection("kr").document(del.YEAR)
+                .collection(lo).document(del.YEAR)
                 .collection(del.MONTH).document(del.DATE);
+        ref.update("event", FieldValue.arrayRemove(del));
+        ref = db.collection("share").document(loginCode)
+                .collection(lo2).document(del.YEAR)
+                .collection(month).document(del.DATE);
         ref.update("event", FieldValue.arrayRemove(del));
     }
 

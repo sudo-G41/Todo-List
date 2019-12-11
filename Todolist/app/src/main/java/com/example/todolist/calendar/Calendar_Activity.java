@@ -172,6 +172,7 @@ public class Calendar_Activity extends LinearLayout {
                         final AlertDialog.Builder newBuilder = new AlertDialog.Builder(context);
                         newBuilder.setCancelable(true);
                         final View newView = LayoutInflater.from(parent.getContext()).inflate(R.layout.event_calendar_layout, null);
+                        Log.e(parent.getContext().toString(),"이건?");
                         Button cancel = newView.findViewById(R.id.eventcaldar_cancel);
                         Button promise = newView.findViewById(R.id.eventcaldar_promise);
 

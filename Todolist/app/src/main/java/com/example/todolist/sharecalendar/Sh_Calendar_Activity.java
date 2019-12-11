@@ -201,7 +201,13 @@ public class Sh_Calendar_Activity extends LinearLayout {
                                 });
                             }
                             else{
-                                Toast.makeText(context, "비어있습니다.", Toast.LENGTH_SHORT).show();
+                                if(Localbtn){
+                                    Toast.makeText(context, "비어있습니다.", Toast.LENGTH_SHORT).show();
+                                }
+                                else{
+                                    Toast.makeText(context, "空いています。", Toast.LENGTH_SHORT).show();
+                                }
+
                                 Log.e("그리드뷰 실패","에러다..");
                             }
                         }
@@ -507,4 +513,6 @@ public class Sh_Calendar_Activity extends LinearLayout {
         this.Localbtn = false;
         Log.e("언어설정","일본어");
     }
+
+    public String getLocalName() {return LocalName;}
 }
